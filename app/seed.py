@@ -1,6 +1,9 @@
 """테스트 데이터 시드 (Django `create_test_data` management command 대체).
 
 실행:  python -m app.seed
+
+경매 이미지는 원본 저장소(mutsha-auction-back-professor)에서 실제로 업로드됐던
+사진들을 `media/seed_images/` 로 가져와 사용합니다. (currency 단위는 '잔' = 포인트)
 """
 from datetime import timedelta
 
@@ -48,50 +51,58 @@ def run() -> None:
         bidder = _get_or_create_user(session, "test_bidder")
         competitor = _get_or_create_user(session, "test_competitor")
 
+        # 이미지는 원본 저장소에서 가져온 media/seed_images/* 사진을 사용합니다.
         _get_or_create_auction(
-            session, "[판매] 아이폰 15 Pro", seller,
-            description="새 제품입니다. 직거래 가능합니다.",
+            session, "🍰 맛있는 케이크", seller,
+            description="정성껏 구운 홈메이드 케이크입니다. 직거래 가능해요.",
             starting_price=500000, current_price=850000,
             status="active", end_time=now + timedelta(days=2),
+            image_file="seed_images/cake.png",
         )
         _get_or_create_auction(
-            session, "[판매] 맥북 프로 M3", seller,
-            description="1년 사용, 거의 새 제품입니다.",
+            session, "💄 명품 향수", seller,
+            description="한 번도 사용하지 않은 새 향수예요.",
             starting_price=1000000, current_price=1200000,
             status="active", end_time=now + timedelta(days=5),
+            image_file="seed_images/perfume.jpg",
         )
         _get_or_create_auction(
-            session, "[판매] 에어팟 프로 2", seller,
-            description="미개봉 새 제품입니다.",
+            session, "🧸 곰인형", seller,
+            description="포근하고 귀여운 곰인형, 미개봉 새 상품입니다.",
             starting_price=150000, current_price=200000,
             status="ended", end_time=now - timedelta(days=1), winner_id=competitor.id,
+            image_file="seed_images/teddybear.jpg",
         )
         auction4 = _get_or_create_auction(
-            session, "갤럭시 S24 Ultra", competitor,
-            description="완전 새 제품, 미개봉입니다.",
+            session, "🥭 신선한 망고", competitor,
+            description="달콤하고 신선한 프리미엄 망고입니다.",
             starting_price=800000, current_price=950000,
             status="active", end_time=now + timedelta(days=3),
+            image_file="seed_images/mango.jpg",
         )
         auction5 = _get_or_create_auction(
-            session, "애플워치 울트라 2", competitor,
-            description="3개월 사용, 상태 좋습니다.",
+            session, "🍗 바삭한 치킨", competitor,
+            description="방금 튀긴 따끈한 치킨입니다.",
             starting_price=500000, current_price=700000,
             status="active", end_time=now + timedelta(days=1),
+            image_file="seed_images/chicken.jpg",
         )
         _get_or_create_auction(
-            session, "아이패드 프로 11인치", competitor,
-            description="6개월 사용, 케이스 포함.",
+            session, "🎟️ 떡볶이 쿠폰", competitor,
+            description="어디서나 쓸 수 있는 떡볶이 교환 쿠폰입니다.",
             starting_price=600000, current_price=750000,
             status="ended", end_time=now - timedelta(days=2), winner_id=bidder.id,
+            image_file="seed_images/tteokbbeoki_coupon.jpg",
         )
         _get_or_create_auction(
-            session, "닌텐도 스위치 OLED", competitor,
-            description="거의 새 제품, 게임 3개 포함.",
+            session, "🎄 크리스마스 트리", competitor,
+            description="연말 분위기를 위한 예쁜 트리입니다.",
             starting_price=250000, current_price=320000,
             status="ended", end_time=now - timedelta(days=3), winner_id=competitor.id,
+            image_file="seed_images/christmastree.jpg",
         )
 
-        # 입찰 내역 몇 개
+        # 입찰 내역 몇 개 (test_bidder 의 '내 입찰' 시나리오용)
         for auction, amount in [(auction4, 900000), (auction4, 950000), (auction5, 700000)]:
             exists = session.exec(
                 select(Bid).where(
