@@ -28,6 +28,8 @@ async def auction_ws(websocket: WebSocket, auction_id: int):
 
             if message.get("type") == "bid":
                 await _handle_bid(websocket, auction_id, message)
+            # elif message.get("type") == "chat":
+            #     await _handle_chat(websocket, auction_id, message)  # TODO(과제): 채팅
             # 그 외 타입은 무시 (확장 지점)
     except WebSocketDisconnect:
         manager.disconnect(auction_id, websocket)
@@ -65,3 +67,16 @@ async def _handle_bid(websocket: WebSocket, auction_id: int, message: dict) -> N
 
         # 방 전체에 최신 경매 상태 방송
         await manager.broadcast(auction_id, data)
+
+
+# ---------------------------------------------------------------------------
+# TODO(과제): 경매방 실시간 채팅 구현하기
+# ---------------------------------------------------------------------------
+# 1) 위 while 루프에서 message["type"] == "chat" 인 경우 _handle_chat 을 호출하세요.
+# 2) 아래 _handle_chat 을 완성하세요.
+#    - {"type": "chat", "message": "..."} 를 받아
+#    - 보낸 사람의 username(로그인 안 했으면 "익명")과 함께
+#    - manager.broadcast 로 같은 방의 모두에게 {"type": "chat", ...} 를 방송
+#
+# async def _handle_chat(websocket: WebSocket, auction_id: int, message: dict) -> None:
+#     ...
