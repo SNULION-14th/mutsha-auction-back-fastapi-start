@@ -32,8 +32,11 @@ async def auction_ws(websocket: WebSocket, auction_id: int):
             #     await _handle_chat(websocket, auction_id, message)  # TODO(과제): 채팅
             # 그 외 타입은 무시 (확장 지점)
     except WebSocketDisconnect:
-        manager.disconnect(auction_id, websocket)
-    except Exception:
+        pass
+    finally:
+        # 정상 종료든 예외든 방에서 제거합니다. 그 외 예외는 일부러 삼키지 않아요.
+        # (삼키면 소켓이 열린 채로 남아 응답 없는 연결이 되고, 에러 로그도 사라집니다.
+        #  밖으로 내보내면 uvicorn 이 traceback 을 남기고 연결을 닫아줍니다.)
         manager.disconnect(auction_id, websocket)
 
 
